@@ -4,15 +4,15 @@ linux_usb_class::linux_usb_class(QObject *parent)
     :QObject(parent)
 {
    started = false; //флаг устройство запущено
-   buf = (char *)malloc(1023);
+   buf = (char *)malloc(1023*12);
 }
-void linux_usb_class::start(){
+void linux_usb_class::start_read(){
     if(started) return;
     if(ioctl(fd,DEV_CMD_START,&len)<0) qDebug() <<"Error ioctl failed"; //передача команды начала преобразования
 
     started = true;
 }
-void linux_usb_class::stop(){
+void linux_usb_class::stop_read(){
     if(!started) return;
     if(ioctl(fd,DEV_CMD_STOP,&len)<0)  qDebug() <<"Error ioctl failed";
 }
@@ -40,7 +40,7 @@ int linux_usb_class::read_data(){
         if ((rc = poll(ufds, 1, timeout)) < 0)   qDebug() <<"Failure in poll\n";
         if (rc > 0) {
             if (ufds[0].revents & POLLIN) {
-                rc = read(fd, buf, 1023);
+                rc = read(fd, (buf+1023*count), 1023);
                 count++;
                 if(count>12){
                     emit haveData(buf);

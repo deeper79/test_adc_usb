@@ -5,7 +5,7 @@ Widget::Widget(QWidget *parent)
 {
 
     setGeometry(20,20,1024,800);
-    buffer_in = (char *)malloc(1023);
+    buffer_in = (char *)malloc(1023*12);
 
     open       =  new QPushButton("Open",this);
     close      =  new QPushButton("Close",this);
@@ -17,7 +17,7 @@ Widget::Widget(QWidget *parent)
     time->start();
     str_number = 0;
 
-    adc_usb->moveToThread(thread_usb);
+
 
     open->setGeometry(10,10,100,30);
     close->setGeometry(10,50,100,30);
@@ -25,16 +25,22 @@ Widget::Widget(QWidget *parent)
     stop->setGeometry(10,130,100,30);
 
 
-    connect(open,      SIGNAL(pressed()),  this,  SLOT(openClick()));
-    connect(close,     SIGNAL(pressed()),  this,  SLOT(closeClick()));
-    connect(start,     SIGNAL(pressed()),  this,  SLOT(startClick()));
-    connect(stop,      SIGNAL(pressed()),  this,  SLOT(stopClick()));
-    connect(thread_usb,SIGNAL(started()),adc_usb, SLOT(read_data()));
-    connect(adc_usb,   SIGNAL(haveData(char*)),this,   SLOT(dataRecived(char *)));
+    connect(open,      SIGNAL(pressed())      ,this,    SLOT(openClick()));
+    connect(close,     SIGNAL(pressed())      ,this,    SLOT(closeClick()));
+    connect(start,     SIGNAL(pressed())      ,this,    SLOT(startClick()));
+    connect(stop,      SIGNAL(pressed())      ,this,    SLOT(stopClick()));
+    connect(thread_usb,SIGNAL(started())      ,adc_usb, SLOT(read_data()));
+    connect(adc_usb,   SIGNAL(haveData(char *)),this,    SLOT(dataRecived(char *)));
+
+    adc_usb->moveToThread(thread_usb);
+  //  adc_usb->open_dev();
+   // adc_usb->start_read();
+   // thread_usb->start();
 
 }
 void Widget::dataRecived(char *data){
-    memcpy(buffer_in,data,1023);
+    memcpy(buffer_in,data,1023*12);
+    qDebug() << "data recived";
 }
 
 void Widget::openClick(){
@@ -49,22 +55,22 @@ void Widget::closeClick(){
 }
 
 void Widget::startClick(){
-    adc_usb->start();
+    adc_usb->start_read();
+    thread_usb->start();
     qDebug() <<  "Device start";
 }
 
 void Widget::stopClick(){
-    adc_usb->stop();
+    adc_usb->stop_read();
+    thread_usb->exit();
     qDebug() <<  "Device stopped\n";
 }
 
 Widget::~Widget()
 {
-
     delete open;
     delete close;
     delete start;
     delete stop;
     delete adc_usb;
-
 }

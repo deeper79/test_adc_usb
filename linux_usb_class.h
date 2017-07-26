@@ -22,8 +22,8 @@ public:
     bool open_dev(void);
     void close_dev(void);
     int write_data(char *data,int len);
-    void start(void);
-    void stop(void);
+    void start_read(void);
+    void stop_read(void);
     enum {MMAP_DEV_CMD_GET_BUFSIZE,
           DEV_CMD_START,
           DEV_CMD_STOP
