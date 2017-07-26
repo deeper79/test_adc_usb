@@ -6,7 +6,7 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <QLabel>
-#include <adc_usb_class.h>
+#include <linux_usb_class.h>
 #include <QTime>
 
 
@@ -22,7 +22,7 @@ private:
     QPushButton *close;
     QLabel      *edit;
     const char  *data;
-    adc_usb_class *adc_usb;
+    linux_usb_class *adc_usb;
     QTime *time;
     QString string;
    inline QString  getTime(void);

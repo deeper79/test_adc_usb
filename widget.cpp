@@ -8,8 +8,8 @@
 
         open    =  new QPushButton("Open",this);
         close   =  new QPushButton("Close",this);
+        adc_usb =  new linux_usb_class();
         edit    =  new QLabel(this);
-        adc_usb =  new adc_usb_class();
         time    =  new QTime();
         time->start();
         str_number = 0;
@@ -25,7 +25,7 @@
 
         connect(open,    SIGNAL(pressed()),  this,  SLOT(openClick()));
         connect(close,   SIGNAL(pressed()),  this,  SLOT(closeClick()));
-        connect(adc_usb, SIGNAL(haveData()), this,  SLOT(printData()));
+      //  connect(adc_usb, SIGNAL(haveData()), this,  SLOT(printData()));
 
     }
     void Widget::printData(){
@@ -51,11 +51,6 @@
             }
 
         }
-
-
-
-
-
     }
     QString Widget::getTime(){
 
@@ -79,7 +74,7 @@
     void Widget::openClick(){
 
 
-        if(adc_usb->open(QIODevice::ReadWrite)){
+        if(adc_usb->open_dev()){
 
             string.append(getTime() + ".....File open\r\n");
 
@@ -95,8 +90,7 @@
 
     void Widget::closeClick(){
         time->restart();
-        adc_usb->close(QIODevice::ReadWrite);
-
+        adc_usb->close_dev();
         string.append("time "+QString::number(time->hour())
                       + ":" + QString::number(time->minute())
                       + ":" + QString::number(time->second())
