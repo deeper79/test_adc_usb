@@ -8,6 +8,7 @@
 #include <QLabel>
 #include <linux_usb_class.h>
 #include <QTime>
+#include <QThread>
 
 
 class Widget : public QWidget
@@ -18,17 +19,17 @@ public:
     Widget(QWidget *parent = 0);
     ~Widget();
 private:
-    QPushButton *open;
-    QPushButton *close;
-    QPushButton *start;
-    QPushButton *stop;
-    const char  *data;
+    QPushButton     *open;
+    QPushButton     *close;
+    QPushButton     *start;
+    QPushButton     *stop;
+    const char      *data;
     linux_usb_class *adc_usb;
-    QTime *time;
-    QString string;
+    QTime           *time;
+    QThread         *thread_usb;
 
-   long int bytes_resive;
-   int str_number;
+    long int bytes_resive;
+    int str_number;
 
 public slots:
 
@@ -36,8 +37,6 @@ public slots:
     void closeClick(void);
     void startClick(void);
     void stopClick(void);
-
-
 
 };
 

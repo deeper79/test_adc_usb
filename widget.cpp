@@ -12,8 +12,11 @@ Widget::Widget(QWidget *parent)
     stop    =  new QPushButton("Stop",this);
     adc_usb =  new linux_usb_class();
     time    =  new QTime();
+    thread_usb = new QThread();
     time->start();
     str_number = 0;
+
+    adc_usb->moveToThread(thread_usb);
 
     open->setGeometry(10,10,100,30);
     close->setGeometry(10,50,100,30);
