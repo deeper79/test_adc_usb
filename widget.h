@@ -30,6 +30,8 @@ private:
 
     long int bytes_resive;
     int str_number;
+    char *buffer_in;
+
 
 public slots:
 
@@ -37,6 +39,7 @@ public slots:
     void closeClick(void);
     void startClick(void);
     void stopClick(void);
+    void dataRecived(char *data);
 
 };
 

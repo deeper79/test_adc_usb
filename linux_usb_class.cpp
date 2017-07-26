@@ -3,13 +3,12 @@
 linux_usb_class::linux_usb_class(QObject *parent)
     :QObject(parent)
 {
-    buf.resize(1023);
-    started = false;
-
+   started = false; //флаг устройство запущено
+   buf = (char *)malloc(1023);
 }
 void linux_usb_class::start(){
     if(started) return;
-    if(ioctl(fd,DEV_CMD_START,&len)<0) qDebug() <<"Error ioctl failed";
+    if(ioctl(fd,DEV_CMD_START,&len)<0) qDebug() <<"Error ioctl failed"; //передача команды начала преобразования
 
     started = true;
 }
@@ -24,60 +23,40 @@ bool linux_usb_class::open_dev(){
     return true;
 }
 void linux_usb_class::close_dev(){
-      close(fd);
+    close(fd);
 }
 
-int linux_usb_class::read_data(char *data, int len){
-    int retval =0;
+int linux_usb_class::read_data(){
 
-    char *buf;
     struct pollfd ufds[1];
     int timeout = 10000;	/* time out for poll */
     int rc;
-    int k=0;
-    QByteArray array;
+    static char count=0;
 
     ufds[0].fd = fd;
     ufds[0].events = POLLIN;
 
-
-    qDebug() <<"buffer size...." << len;
-
-    buf = (char *)malloc(1023);
-
     for (;;) {
-
-        if ((rc = poll(ufds, 1, timeout)) < 0) {
-            qDebug() <<"Failure in poll\n";
-
-        }
-
+        if ((rc = poll(ufds, 1, timeout)) < 0)   qDebug() <<"Failure in poll\n";
         if (rc > 0) {
-
             if (ufds[0].revents & POLLIN) {
                 rc = read(fd, buf, 1023);
-
-
-            } else {
-
-            }
-
-        } else {
-            qDebug() << "poll timed out in " <<timeout <<"milliseconds";
+                count++;
+                if(count>12){
+                    emit haveData(buf);
+                    count = 0;
+                }
+            }else  qDebug() << "poll timed out in " <<timeout <<"milliseconds";
         }
     }
 
-
-
-    return retval;
-
+    return rc;
 }
 int linux_usb_class::write_data(char *data, int len){
+    Q_UNUSED(data);
+    Q_UNUSED(len);
+
     return 0;
 
 }
 
-void linux_usb_class::timerEvent(QTimerEvent *){
-
-
-}

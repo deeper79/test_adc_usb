@@ -22,7 +22,6 @@ public:
     bool open_dev(void);
     void close_dev(void);
     int write_data(char *data,int len);
-    int read_data (char *data,int len);
     void start(void);
     void stop(void);
     enum {MMAP_DEV_CMD_GET_BUFSIZE,
@@ -34,16 +33,15 @@ private:
     uint len;
     const char *dev = DEFAULT_DEVICE;
     QString string;
-    char *ptr;
     struct pollfd pfd;
-    QByteArray buf;
-    void timerEvent(QTimerEvent *);
-    char buffer[1024];
     bool started;
-
-    char *mmap_buf; //adress mmap
+    char *buf;
 signals:
     void getString(QString *str);
+
+    void haveData(char *data);
+public slots:
+    int read_data ();
 };
 
 #endif // LINUX_USB_CLASS_H

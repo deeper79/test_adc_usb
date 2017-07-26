@@ -5,14 +5,15 @@ Widget::Widget(QWidget *parent)
 {
 
     setGeometry(20,20,1024,800);
+    buffer_in = (char *)malloc(1023);
 
-    open    =  new QPushButton("Open",this);
-    close   =  new QPushButton("Close",this);
-    start   =  new QPushButton("Start",this);
-    stop    =  new QPushButton("Stop",this);
-    adc_usb =  new linux_usb_class();
-    time    =  new QTime();
-    thread_usb = new QThread();
+    open       =  new QPushButton("Open",this);
+    close      =  new QPushButton("Close",this);
+    start      =  new QPushButton("Start",this);
+    stop       =  new QPushButton("Stop",this);
+    adc_usb    =  new linux_usb_class();
+    time       =  new QTime();
+    thread_usb =  new QThread();
     time->start();
     str_number = 0;
 
@@ -24,11 +25,16 @@ Widget::Widget(QWidget *parent)
     stop->setGeometry(10,130,100,30);
 
 
-    //connect(open,    SIGNAL(pressed()),  this,  SLOT(openClick()));
-    //connect(close,   SIGNAL(pressed()),  this,  SLOT(closeClick()));
-    connect(start,   SIGNAL(pressed()),  this,  SLOT(startClick()));
-    connect(stop,    SIGNAL(pressed()),  this,  SLOT(stopClick()));
+    connect(open,      SIGNAL(pressed()),  this,  SLOT(openClick()));
+    connect(close,     SIGNAL(pressed()),  this,  SLOT(closeClick()));
+    connect(start,     SIGNAL(pressed()),  this,  SLOT(startClick()));
+    connect(stop,      SIGNAL(pressed()),  this,  SLOT(stopClick()));
+    connect(thread_usb,SIGNAL(started()),adc_usb, SLOT(read_data()));
+    connect(adc_usb,   SIGNAL(haveData(char*)),this,   SLOT(dataRecived(char *)));
 
+}
+void Widget::dataRecived(char *data){
+    memcpy(buffer_in,data,1023);
 }
 
 void Widget::openClick(){
@@ -51,7 +57,6 @@ void Widget::stopClick(){
     adc_usb->stop();
     qDebug() <<  "Device stopped\n";
 }
-
 
 Widget::~Widget()
 {
