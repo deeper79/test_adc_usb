@@ -20,13 +20,13 @@ public:
 private:
     QPushButton *open;
     QPushButton *close;
-    QLabel      *edit;
+    QPushButton *start;
+    QPushButton *stop;
     const char  *data;
     linux_usb_class *adc_usb;
     QTime *time;
     QString string;
-   inline QString  getTime(void);
-   inline int      IntgetTime(void);
+
    long int bytes_resive;
    int str_number;
 
@@ -34,7 +34,9 @@ public slots:
 
     void openClick(void);
     void closeClick(void);
-    void printData();
+    void startClick(void);
+    void stopClick(void);
+
 
 
 };

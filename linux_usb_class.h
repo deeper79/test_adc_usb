@@ -13,6 +13,8 @@
 #include <QObject>
 #define DEFAULT_DEVICE "/dev/adc-rls1"
 #define MMAP_DEV_CMD_GET_BUFSIZE 1
+#define DEV_CMD_START 1
+#define DEV_CMD_STOP  1
 
 class linux_usb_class:public QObject
 {
@@ -23,18 +25,20 @@ public:
     void close_dev(void);
     int write_data(char *data,int len);
     int read_data (char *data,int len);
+    void start(void);
+    void stop(void);
 private:
     int fd;
     uint len;
     const char *dev = DEFAULT_DEVICE;
     QString string;
-     char *ptr;
-     struct pollfd pfd;
-     QByteArray buf;
-      void timerEvent(QTimerEvent *);
-      char buffer[1024];
+    char *ptr;
+    struct pollfd pfd;
+    QByteArray buf;
+    void timerEvent(QTimerEvent *);
+    char buffer[1024];
 
-      char *mmap_buf; //adress mmap
+    char *mmap_buf; //adress mmap
 signals:
     void getString(QString *str);
 };

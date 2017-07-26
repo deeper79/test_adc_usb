@@ -6,6 +6,12 @@ linux_usb_class::linux_usb_class(QObject *parent)
      buf.resize(1023);
 
 }
+void linux_usb_class::start(){
+
+}
+void linux_usb_class::stop(){
+
+}
 
 bool linux_usb_class::open_dev(){
 
@@ -15,8 +21,8 @@ bool linux_usb_class::open_dev(){
     int rc;
     int k=0;
     QByteArray array;
-    static int p = 0;
-    array.resize(1023*12*10);
+
+    array.resize(1023);
 
     fd = open(dev,O_RDWR);
     if(fd == -1) return false;
