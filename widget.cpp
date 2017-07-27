@@ -33,9 +33,6 @@ Widget::Widget(QWidget *parent)
     connect(adc_usb,   SIGNAL(haveData(char *)),this,    SLOT(dataRecived(char *)));
 
     adc_usb->moveToThread(thread_usb);
-  //  adc_usb->open_dev();
-   // adc_usb->start_read();
-   // thread_usb->start();
 
 }
 void Widget::dataRecived(char *data){
@@ -57,13 +54,13 @@ void Widget::closeClick(){
 void Widget::startClick(){
     adc_usb->start_read();
     thread_usb->start();
-    qDebug() <<  "Device start";
+
 }
 
 void Widget::stopClick(){
     adc_usb->stop_read();
     thread_usb->exit();
-    qDebug() <<  "Device stopped\n";
+
 }
 
 Widget::~Widget()

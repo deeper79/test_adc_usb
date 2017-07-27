@@ -8,13 +8,23 @@ linux_usb_class::linux_usb_class(QObject *parent)
 }
 void linux_usb_class::start_read(){
     if(started) return;
-    if(ioctl(fd,DEV_CMD_START,&len)<0) qDebug() <<"Error ioctl failed"; //передача команды начала преобразования
-
+    if(ioctl(fd,DEV_CMD_START,&len)<0) {//передача команды начала преобразования
+        qDebug() <<"Error ioctl failed";
+        return;
+    }
+   qDebug() <<  "Device start";
     started = true;
 }
 void linux_usb_class::stop_read(){
     if(!started) return;
-    if(ioctl(fd,DEV_CMD_STOP,&len)<0)  qDebug() <<"Error ioctl failed";
+    if(ioctl(fd,DEV_CMD_STOP,&len)<0){
+        qDebug() <<"Error ioctl failed";
+        return;
+    }
+     started = false;
+
+  qDebug() <<  "Device stopped\n";
+
 }
 
 bool linux_usb_class::open_dev(){ 
