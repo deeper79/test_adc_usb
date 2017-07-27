@@ -70,36 +70,27 @@ Widget::Widget(QWidget *parent)
 
 }
 void Widget::dataRecived(char *data){
-    qreal max=0,min =0;
+    uchar max=0,min =0;
     memcpy(buffer_in,data,512*12);
 
-    max = *buffer_in;
-    min = *buffer_in;
-    for(int j=0;j<12;j++){
-
-        for(int i=0;i<512;i++){
+    max = (uchar)*buffer_in;
+    min = (uchar)*buffer_in;
+    for(int j=0;j<1;j++){
+       for(int i=0;i<512;i++){
             points[i] = QPointF(i,(uchar)*(buffer_in+i+j*512));
-            if(max>(uchar)*(buffer_in+i+j*512)) max = (uchar)*(buffer_in+i+j*512);
-            if(min<(uchar)*(buffer_in+i+j*512)) min = (uchar)*(buffer_in+i+j*512);
+            if(max<(uchar)*(buffer_in+i+j*512)) max = (uchar)*(buffer_in+i+j*512);
+            if(min>(uchar)*(buffer_in+i+j*512)) min = (uchar)*(buffer_in+i+j*512);
         }
         LineSerias[j]->replace(points);
-      }
-    min *=0.99;
-    max *=1.1;
-    chartview->chart()->axisY()->setMax(max);
-    chartview->chart()->axisY()->setMin(min);
+    }
 
-    //  points[0]=QPointF(1,1);
-    //  points[1]=QPointF(2,2);
-    //  points[2]=QPointF(3,3);
-    //poin
+    float minf =(float)min *0.99;
+    float maxf =(float)max *1.1;
 
-    //for(int i=0;i<12;i++)
+    chartview->chart()->axisY()->setMax(maxf);
+    chartview->chart()->axisY()->setMin(minf);
 
-
-
-
-    qDebug() << "data recived";
+    //qDebug() << "data recived";
 }
 
 void Widget::openClick(){
