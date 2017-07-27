@@ -41,10 +41,14 @@ Widget::Widget(QWidget *parent)
 
     chart->addAxis(axisX,Qt::AlignBottom);
     chart->addAxis(axisY,Qt::AlignLeft);
-    for(int i=0;i<12;i++)
+    for(int i=0;i<12;i++){
+
+        LineSerias[i]->replace(points);
         chart->addSeries(LineSerias[i]);
-    LineSerias[0]->attachAxis(axisX);
-    LineSerias[0]->attachAxis(axisY);
+        LineSerias[i]->attachAxis(axisX);
+        LineSerias[i]->attachAxis(axisY);
+    }
+
 
     chartview->setChart(chart);
 
@@ -75,7 +79,7 @@ void Widget::dataRecived(char *data){
 
     max = (uchar)*buffer_in;
     min = (uchar)*buffer_in;
-    for(int j=0;j<1;j++){
+    for(int j=0;j<12;j++){
        for(int i=0;i<512;i++){
             points[i] = QPointF(i,(uchar)*(buffer_in+i+j*512));
             if(max<(uchar)*(buffer_in+i+j*512)) max = (uchar)*(buffer_in+i+j*512);
@@ -87,8 +91,8 @@ void Widget::dataRecived(char *data){
     float minf =(float)min *0.99;
     float maxf =(float)max *1.1;
 
-    chartview->chart()->axisY()->setMax(maxf);
-    chartview->chart()->axisY()->setMin(minf);
+    chartview->chart()->axisY()->setMax(64);
+    chartview->chart()->axisY()->setMin(0);
 
     //qDebug() << "data recived";
 }
