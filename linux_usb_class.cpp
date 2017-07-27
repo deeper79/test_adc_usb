@@ -50,7 +50,7 @@ int linux_usb_class::read_data(){
         if ((rc = poll(ufds, 1, timeout)) < 0)   qDebug() <<"Failure in poll\n";
         if (rc > 0) {
             if (ufds[0].revents & POLLIN) {
-                rc = read(fd, (buf+1023*count), 1023);
+                rc = read(fd, (buf+512*count), 512);
                 count++;
                 if(count>12){
                     emit haveData(buf);

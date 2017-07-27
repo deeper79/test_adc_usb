@@ -1,11 +1,15 @@
 #include "widget.h"
-
+QT_CHARTS_USE_NAMESPACE
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
 {
 
     setGeometry(20,20,1024,800);
     buffer_in = (char *)malloc(1023*12);
+
+    chart = new QChart();
+    axisX = new QValueAxis;
+    axisY = new QValueAxis;
 
     open       =  new QPushButton("Open",this);
     close      =  new QPushButton("Close",this);
@@ -14,8 +18,37 @@ Widget::Widget(QWidget *parent)
     adc_usb    =  new linux_usb_class();
     time       =  new QTime();
     thread_usb =  new QThread();
+    //LineSerias =  new QLineSeries(this);
+    chartview  =  new QChartView(this);
+    //  LineSerias->setUseOpenGL(true);
     time->start();
     str_number = 0;
+    for(int i=0;i<12;i++)
+        LineSerias << new QLineSeries;
+
+    for(int i=0;i<512;i++)
+        points <<  QPointF(i,10);
+
+
+    //  points << QPointF(0,0);
+    //  points << QPointF(1,20);
+    //  points << QPointF(2,-10);
+
+
+    //LineSerias[0]->insert(0,QPointF(0,10));
+    LineSerias[0]->replace(points);
+
+
+    chart->addAxis(axisX,Qt::AlignBottom);
+    chart->addAxis(axisY,Qt::AlignLeft);
+    for(int i=0;i<12;i++)
+        chart->addSeries(LineSerias[i]);
+    LineSerias[0]->attachAxis(axisX);
+    LineSerias[0]->attachAxis(axisY);
+
+    chartview->setChart(chart);
+
+
 
 
 
@@ -23,6 +56,7 @@ Widget::Widget(QWidget *parent)
     close->setGeometry(10,50,100,30);
     start->setGeometry(10,90,100,30);
     stop->setGeometry(10,130,100,30);
+    chartview->setGeometry(120,10,900,600);
 
 
     connect(open,      SIGNAL(pressed())      ,this,    SLOT(openClick()));
@@ -36,7 +70,35 @@ Widget::Widget(QWidget *parent)
 
 }
 void Widget::dataRecived(char *data){
-    memcpy(buffer_in,data,1023*12);
+    qreal max=0,min =0;
+    memcpy(buffer_in,data,512*12);
+
+    max = *buffer_in;
+    min = *buffer_in;
+    for(int j=0;j<12;j++){
+
+        for(int i=0;i<512;i++){
+            points[i] = QPointF(i,(uchar)*(buffer_in+i+j*512));
+            if(max>(uchar)*(buffer_in+i+j*512)) max = (uchar)*(buffer_in+i+j*512);
+            if(min<(uchar)*(buffer_in+i+j*512)) min = (uchar)*(buffer_in+i+j*512);
+        }
+        LineSerias[j]->replace(points);
+      }
+    min *=0.99;
+    max *=1.1;
+    chartview->chart()->axisY()->setMax(max);
+    chartview->chart()->axisY()->setMin(min);
+
+    //  points[0]=QPointF(1,1);
+    //  points[1]=QPointF(2,2);
+    //  points[2]=QPointF(3,3);
+    //poin
+
+    //for(int i=0;i<12;i++)
+
+
+
+
     qDebug() << "data recived";
 }
 

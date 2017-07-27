@@ -11,6 +11,7 @@
 #include <QByteArray>
 #include <QDebug>
 #include <QObject>
+
 #define DEFAULT_DEVICE "/dev/adc-rls1"
 
 #define  DEV_CMD_START            0
@@ -42,6 +43,7 @@ private:
     struct pollfd pfd;
     bool started;
     char *buf;
+
 signals:
     void getString(QString *str);
 

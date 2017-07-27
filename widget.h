@@ -9,7 +9,11 @@
 #include <linux_usb_class.h>
 #include <QTime>
 #include <QThread>
+#include <QtCharts/QLineSeries>
+#include <QtCharts/QChartView>
+#include <QtCharts>
 
+QT_CHARTS_USE_NAMESPACE
 
 class Widget : public QWidget
 {
@@ -31,6 +35,13 @@ private:
     long int bytes_resive;
     int str_number;
     char *buffer_in;
+
+    QChartView  *chartview;
+    QValueAxis  *axisX;
+    QValueAxis  *axisY;
+    QChart      *chart;
+    QVector<QLineSeries *> LineSerias;
+    QVector<QPointF> points;
 
 
 public slots:
