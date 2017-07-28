@@ -3,27 +3,27 @@
 linux_usb_class::linux_usb_class(QObject *parent)
     :QObject(parent)
 {
-   started = false; //флаг устройство запущено
-   buf = (char *)malloc(1023*12);
+    started = false; //флаг устройство запущено
+    buf = (char *)malloc(1023*12);
 }
 void linux_usb_class::start_read(){
     if(started) return;
-    if(ioctl(fd,DEV_CMD_START,&len)<0) {//передача команды начала преобразования
+    if(ioctl(fd,DEV_CMD_START,&offset)<0) {//передача команды начала преобразования
         qDebug() <<"Error ioctl failed";
         return;
     }
-   qDebug() <<  "Device start";
+    qDebug() <<  "Device start";
     started = true;
 }
 void linux_usb_class::stop_read(){
     if(!started) return;
-    if(ioctl(fd,DEV_CMD_STOP,&len)<0){
+    if(ioctl(fd,DEV_CMD_STOP,&offset)<0){
         qDebug() <<"Error ioctl failed";
         return;
     }
-     started = false;
+    started = false;
 
-  qDebug() <<  "Device stopped\n";
+    qDebug() <<  "Device stopped\n";
 
 }
 
@@ -35,6 +35,7 @@ bool linux_usb_class::open_dev(){
 void linux_usb_class::close_dev(){
     close(fd);
 }
+
 
 int linux_usb_class::read_data(){
 
@@ -50,8 +51,9 @@ int linux_usb_class::read_data(){
         if ((rc = poll(ufds, 1, timeout)) < 0)   qDebug() <<"Failure in poll\n";
         if (rc > 0) {
             if (ufds[0].revents & POLLIN) {
+                ioctl(fd,DEV_OFFSET_DATA,&offset);
                 rc = read(fd, (buf+512*count), 512);
-                count++;
+                 count++;
                 if(count>12){
                     emit haveData(buf);
                     count = 0;

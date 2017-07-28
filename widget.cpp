@@ -52,6 +52,9 @@ Widget::Widget(QWidget *parent)
 
     chartview->setChart(chart);
 
+    chartview->chart()->axisY()->setMax(64);
+    chartview->chart()->axisY()->setMin(0);
+
 
 
 
@@ -74,27 +77,19 @@ Widget::Widget(QWidget *parent)
 
 }
 void Widget::dataRecived(char *data){
-    uchar max=0,min =0;
-    memcpy(buffer_in,data,512*12);
 
-    max = (uchar)*buffer_in;
-    min = (uchar)*buffer_in;
+
     for(int j=0;j<12;j++){
-       for(int i=0;i<512;i++){
-            points[i] = QPointF(i,(uchar)*(buffer_in+i+j*512));
-            if(max<(uchar)*(buffer_in+i+j*512)) max = (uchar)*(buffer_in+i+j*512);
-            if(min>(uchar)*(buffer_in+i+j*512)) min = (uchar)*(buffer_in+i+j*512);
+        for(int i=0;i<512;i++){
+            points[i] = QPointF(i,*(data+i+j*512));
         }
         LineSerias[j]->replace(points);
     }
 
-    float minf =(float)min *0.99;
-    float maxf =(float)max *1.1;
 
-    chartview->chart()->axisY()->setMax(64);
-    chartview->chart()->axisY()->setMin(0);
 
-    //qDebug() << "data recived";
+
+     //adc_usb->get_offset();
 }
 
 void Widget::openClick(){
@@ -116,8 +111,7 @@ void Widget::startClick(){
 
 void Widget::stopClick(){
     adc_usb->stop_read();
-    thread_usb->exit();
-
+    thread_usb->terminate();
 }
 
 Widget::~Widget()
