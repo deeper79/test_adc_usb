@@ -27,7 +27,7 @@ Widget::Widget(QWidget *parent)
         LineSerias << new QLineSeries;
 
     for(int i=0;i<512;i++)
-        points <<  QPointF(i,10);
+        points <<  QPointF(i,0);
 
 
     //  points << QPointF(0,0);
@@ -36,25 +36,35 @@ Widget::Widget(QWidget *parent)
 
 
     //LineSerias[0]->insert(0,QPointF(0,10));
-    LineSerias[0]->replace(points);
+
 
 
     chart->addAxis(axisX,Qt::AlignBottom);
     chart->addAxis(axisY,Qt::AlignLeft);
     for(int i=0;i<12;i++){
-
         LineSerias[i]->replace(points);
         chart->addSeries(LineSerias[i]);
+
         LineSerias[i]->attachAxis(axisX);
         LineSerias[i]->attachAxis(axisY);
+
     }
+    axisX->setTitleText("points");
+    axisY->setTitleText("mV");
+    axisY->setTickCount(5);
+    axisY->setMinorTickCount(4);
+
+    axisX->setTickCount(17);
+    axisX->setMinorTickCount(1);
+
+
+
 
 
     chartview->setChart(chart);
 
-    chartview->chart()->axisY()->setMax(64);
-    chartview->chart()->axisY()->setMin(0);
-
+    chartview->chart()->axisY()->setMax(128);
+    chartview->chart()->axisY()->setMin(-128);
 
 
 
@@ -77,19 +87,40 @@ Widget::Widget(QWidget *parent)
 
 }
 void Widget::dataRecived(char *data){
+    char max=0,min =0;
+    memcpy(buffer_in,data,512*12);
 
+    max = *buffer_in;
+    min = *buffer_in;
 
+/*    for(int j=0;j<12;j++){
+       for(int i=0;i<512;i++){
+       *(buffer_in+i+j*512) = *(buffer_in+i+j*512) - 0x80;
+
+       }
+    }*/
+
+ // int  j=0;
     for(int j=0;j<12;j++){
-        for(int i=0;i<512;i++){
-            points[i] = QPointF(i,*(data+i+j*512));
+       for(int i=0;i<512;i++){
+
+            qreal temp = *(buffer_in+i+j*512);
+
+    //        temp = 2.0*temp/256.0*1000.0;
+                     points[i] = QPointF(i,temp );
+
+       //     if(max<*(buffer_in+i+j*512)) max = *(buffer_in+i+j*512);
+         //   if(min>*(buffer_in+i+j*512)) min = *(buffer_in+i+j*512);
         }
-        LineSerias[j]->replace(points);
+       LineSerias[j]->replace(points);
+
     }
 
 
 
 
-     //adc_usb->get_offset();
+
+   // qDebug() << "data recived";
 }
 
 void Widget::openClick(){
@@ -111,7 +142,8 @@ void Widget::startClick(){
 
 void Widget::stopClick(){
     adc_usb->stop_read();
-    thread_usb->terminate();
+    thread_usb->exit();
+
 }
 
 Widget::~Widget()
